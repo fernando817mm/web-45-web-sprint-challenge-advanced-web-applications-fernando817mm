@@ -5,12 +5,10 @@ import ColorList from "./ColorList";
 // import fetchColorService from '../services/fetchColorService';
 
 import axiosWithAuth from "../helpers/axiosWithAuth";
-import { useParams } from "react-router-dom";
 
 const BubblePage = () => {
   const [colors, setColors] = useState([]);
   const [editing, setEditing] = useState(false);
-  const { id } = useParams();
 
   useEffect(() => {
     fetchColorService();
@@ -32,12 +30,12 @@ const BubblePage = () => {
 
   const saveEdit = (editColor) => {
     axiosWithAuth().put(`http://localhost:5000/api/colors/${editColor.id}`, editColor)
-      .then((res) => {
+      .then(res => {
         const newColorsArr = colors.filter(color => color.id !== res.data.id);
         setColors([...newColorsArr, editColor]);
       })
-      .catch((err) => {
-        alert(err)
+      .catch(err => {
+        alert(err);
       })
   };
 
