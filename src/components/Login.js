@@ -1,29 +1,18 @@
 import axios from "axios";
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 
 const initialValue = {
   username: '',
   password: ''
 }
 
-// const initialFormError = false;
-
 const Login = () => {
   // make a post request to retrieve a token from the api
   // when you have handled the token, navigate to the BubblePage route
   const [ formValue, setFormValue ] = useState(initialValue);
-  const [ formError, setFormError ] = useState(false)
-  
-  //replace with error state
-  const error = formError;
-
-  const formValidity = (user) => {
-    if(user.username.length === 0 || user.password.length === 0){
-      return false;
-    }else{
-      return true;
-    }
-  }
+  const [ error, setError ] = useState('');
+  const { push } = useHistory();
 
   const handleChange = (e) => {
     setFormValue({
@@ -33,23 +22,16 @@ const Login = () => {
   }
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if(formValidity(formValue)){
-      if(formValue.username === 'Lambda' && formValue.password === 'School'){
-        axios.post('http://localhost:5000/api/login', formValue)
-          .then(res => {
-            localStorage.setItem('token', res.data.payload);
-          })
-          .catch(err => {
-            alert(err);
-          })
-      }
-      setFormValue(initialValue);
-      setFormError(false);
-      window.location.replace('http://localhost:3000/bubbles');
-    }else{
-      setFormError(true);
-    }
+    e.preventDefault()
+    axios.post(`http://localhost:5000/api/login`, formValue)
+      .then(res => {
+        localStorage.setItem('token', res.data.payload);
+        push('/bubbles');
+      })
+      .catch(err => {
+        setError(err.response.data.error);
+        // setError('Username or Password no valid');
+      })
   }
 
   return (
@@ -77,7 +59,7 @@ const Login = () => {
           </label>
           <button id='submit'>Submit</button>
         </form>
-        { error && <p id="error" className="error">Username or Password not valid.</p>}
+        { error && <p id="error" className="error">{error}</p>}
       </div>
     </div>
   );

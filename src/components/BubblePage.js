@@ -6,7 +6,6 @@ import ColorList from "./ColorList";
 
 import axiosWithAuth from "../helpers/axiosWithAuth";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 
 const BubblePage = () => {
   const [colors, setColors] = useState([]);
@@ -32,28 +31,13 @@ const BubblePage = () => {
   };
 
   const saveEdit = (editColor) => {
-    axiosWithAuth().put(`http://localhost:5000/api/colors/${id}`, editColor)
-      .then(res => {
-        console.log(res.data);
-        axiosWithAuth().delete(`http://localhost:5000/api/colors/${Number(res.data.id)}`)
-          .then(res => {
-            const newColorsArr = colors.filter(color => color.id !== Number(res.data));
-            setColors(newColorsArr);
-          })
-          .catch(err => {
-            alert(err, 'delete error');
-          })
-        axiosWithAuth().post('http://localhost:5000/api/colors', res.data)
-          .then(res => {
-            console.log(res.data);
-            setColors(res.data);
-          })
-          .catch(err => {
-            alert(err);
-          })
+    axiosWithAuth().put(`http://localhost:5000/api/colors/${editColor.id}`, editColor)
+      .then((res) => {
+        const newColorsArr = colors.filter(color => color.id !== res.data.id);
+        setColors([...newColorsArr, editColor]);
       })
-      .catch(err => {
-        alert(err, 'put error');
+      .catch((err) => {
+        alert(err)
       })
   };
 
