@@ -1,18 +1,40 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
 
 import Login from "./components/Login";
+import PrivateRoute from "./components/PrivateRoute";
+import BubblePage from './components/BubblePage';
 import "./styles.scss";
+import axios from "axios";
+
+import axiosWithAuth from "./helpers/axiosWithAuth";
 
 function App() {
+
+  const handleLogout = () => {
+    axiosWithAuth().post('http://localhost:5000/api/logout')
+      .then(res => {
+        localStorage.removeItem('token');
+        window.location.replace('http://localhost:3000/login');
+      })
+  }
+
   return (
     <Router>
       <div className="App">
         <header>
           Color Picker Sprint Challenge
-          <a data-testid="logoutButton" href="#">logout</a>
+          <a data-testid="logoutButton" href="#" onClick={handleLogout}>Logout</a>
+          <Link to='/login'>Login</Link>
         </header>
       </div>
+      <Switch>
+        <PrivateRoute exact path='/bubbles' component={BubblePage}/>
+        <Route path='/login'>
+          <Login/>
+        </Route>
+        <Route path='/'></Route>
+      </Switch>
     </Router>
   );
 }

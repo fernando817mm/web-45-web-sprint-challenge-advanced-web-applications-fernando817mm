@@ -1,20 +1,81 @@
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
+
+const initialValue = {
+  username: '',
+  password: ''
+}
+
+// const initialFormError = false;
 
 const Login = () => {
   // make a post request to retrieve a token from the api
   // when you have handled the token, navigate to the BubblePage route
+  const [ formValue, setFormValue ] = useState(initialValue);
+  const [ formError, setFormError ] = useState(false)
 
-  const error = "";
+  const error = formError;
   //replace with error state
 
-  return (
-    <div>
-      <h1>Welcome to the Bubble App!</h1>
-      <div data-testid="loginForm" className="login-form">
-        <h2>Build login form here</h2>
-      </div>
+  const formValidity = (user) => {
+    if(user.username.length === 0 || user.password.length === 0){
+      return false;
+    }else{
+      return true;
+    }
+  }
 
-      <p id="error" className="error">{error}</p>
+  const handleChange = (e) => {
+    setFormValue({
+      ...formValue,
+      [e.target.name]: e.target.value
+    });
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if(formValidity(formValue)){
+      if(formValue.username === 'Lambda' && formValue.password === 'School'){
+        axios.post('http://localhost:5000/api/login', formValue)
+          .then(res => {
+            localStorage.setItem('token', res.data.payload);
+          })
+          .catch(err => {
+            alert(err);
+          })
+      }
+      setFormValue(initialValue);
+      setFormError(false);
+      window.location.replace('http://localhost:3000/bubbles');
+    }else{
+      setFormError(true);
+    }
+  }
+
+  return (
+    <div data-testid='loginForm'>
+      <form onSubmit={handleSubmit}>
+        <label>Username: &nbsp;
+          <input
+            type='text'
+            name='username'
+            id='username'
+            onChange={handleChange}
+            value={formValue.username}
+          />
+        </label>
+        <label>Password: &nbsp;
+          <input
+            type='password'
+            name='password'
+            id='password'
+            onChange={handleChange}
+            value={formValue.password}
+          />
+        </label>
+        <button>Submit</button>
+      </form>
+        { error && <p id="error" className="error">Username or Password not valid.</p>}
     </div>
   );
 };
