@@ -13,9 +13,9 @@ const Login = () => {
   // when you have handled the token, navigate to the BubblePage route
   const [ formValue, setFormValue ] = useState(initialValue);
   const [ formError, setFormError ] = useState(false)
-
-  const error = formError;
+  
   //replace with error state
+  const error = formError;
 
   const formValidity = (user) => {
     if(user.username.length === 0 || user.password.length === 0){
@@ -53,29 +53,32 @@ const Login = () => {
   }
 
   return (
-    <div data-testid='loginForm'>
-      <form onSubmit={handleSubmit}>
-        <label>Username: &nbsp;
-          <input
-            type='text'
-            name='username'
-            id='username'
-            onChange={handleChange}
-            value={formValue.username}
-          />
-        </label>
-        <label>Password: &nbsp;
-          <input
-            type='password'
-            name='password'
-            id='password'
-            onChange={handleChange}
-            value={formValue.password}
-          />
-        </label>
-        <button>Submit</button>
-      </form>
+    <div>
+      <h1>Welcome to the Bubble App!</h1>
+      <div data-testid='loginForm' className='login-form'>
+        <form onSubmit={handleSubmit}>
+          <label>Username: &nbsp;
+            <input
+              type='text'
+              name='username'
+              id='username'
+              onChange={handleChange}
+              value={formValue.username}
+            />
+          </label>
+          <label>Password: &nbsp;
+            <input
+              type='password'
+              name='password'
+              id='password'
+              onChange={handleChange}
+              value={formValue.password}
+            />
+          </label>
+          <button id='submit'>Submit</button>
+        </form>
         { error && <p id="error" className="error">Username or Password not valid.</p>}
+      </div>
     </div>
   );
 };
