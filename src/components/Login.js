@@ -1,20 +1,66 @@
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+
+const initialValue = {
+  username: '',
+  password: ''
+}
 
 const Login = () => {
   // make a post request to retrieve a token from the api
   // when you have handled the token, navigate to the BubblePage route
+  const [ formValue, setFormValue ] = useState(initialValue);
+  const [ error, setError ] = useState('');
+  const { push } = useHistory();
 
-  const error = "";
-  //replace with error state
+  const handleChange = (e) => {
+    setFormValue({
+      ...formValue,
+      [e.target.name]: e.target.value
+    });
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    axios.post(`http://localhost:5000/api/login`, formValue)
+      .then(res => {
+        localStorage.setItem('token', res.data.payload);
+        push('/bubbles');
+      })
+      .catch(err => {
+        setError(err.response.data.error);
+        // setError('Username or Password no valid');
+      })
+  }
 
   return (
     <div>
       <h1>Welcome to the Bubble App!</h1>
-      <div data-testid="loginForm" className="login-form">
-        <h2>Build login form here</h2>
+      <div data-testid='loginForm' className='login-form'>
+        <form onSubmit={handleSubmit}>
+          <label>Username: &nbsp;
+            <input
+              type='text'
+              name='username'
+              id='username'
+              onChange={handleChange}
+              value={formValue.username}
+            />
+          </label>
+          <label>Password: &nbsp;
+            <input
+              type='password'
+              name='password'
+              id='password'
+              onChange={handleChange}
+              value={formValue.password}
+            />
+          </label>
+          <button id='submit'>Submit</button>
+        </form>
+        { error && <p id="error" className="error">{error}</p>}
       </div>
-
-      <p id="error" className="error">{error}</p>
     </div>
   );
 };
